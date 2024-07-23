@@ -74,10 +74,10 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               files_names.length>0?
-              ListView.builder(shrinkWrap:true,itemCount: files_names.length,itemBuilder: (context,index){
+              ListView.builder(physics: NeverScrollableScrollPhysics(),shrinkWrap:true,itemCount: files_names.length,itemBuilder: (context,index){
                 return ListTile(title: Text(files_names[index].fullPath),onTap: ()async{
                   print(files_names[index].fullPath);
-                  await FileUploadService.file_download(files_names[index].fullPath);
+                  await FileUploadService.file_download(files_names[index].fullPath,context);
                   },);
               }):Text("loading"),
               
@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                 if(await FileUploadService.file_upload(_file!)){
                   print("Files_uploaded");
-                  await FileUploadService.file_download(basename(_file!.path));
+                  await FileUploadService.file_download(basename(_file!.path),context);
                 }
                 else{
                   print("Files not uploaded");

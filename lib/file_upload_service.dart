@@ -1,9 +1,16 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:file_flutter_upload/image_service.dart';
+import 'package:file_flutter_upload/pdfview_service.dart';
+import 'package:file_flutter_upload/video_play_service.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:mime/mime.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
 
 class FileUploadService{ 
   static Future<dynamic> file_upload(File file)async{
@@ -16,7 +23,7 @@ class FileUploadService{
     }
   }
 
-  static Future<dynamic> file_download(String file_name)async{
+  static Future<dynamic> file_download(String file_name,BuildContext context)async{
     try{
       final Directory? app_document_directory=await getDownloadsDirectory();
       final String app_document_path=app_document_directory!.path;
@@ -25,8 +32,29 @@ class FileUploadService{
 
       final fileupload= await FirebaseStorage.instance.ref().child(file_name).writeToFile(downloaded_file);
       downloaded_file.create();
-      await OpenFile.open(downloaded_file.path);
-      print("FIle downloaded at ${downloaded_file.path}");
+      final file_type=lookupMimeType(file_name);
+      print(file_type);
+      if(file_type=="application/pdf"){
+        final file_path="$app_document_path/new_$file_name";
+        print("$file_path+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>PdfviewService(file_path: file_path)));
+      }
+      else if(file_type=="video/mp4"){
+        final file_path="$app_document_path/new_$file_name";
+        print("$file_path+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>VideoPlayService(file_path: file_path)));
+      }
+      else if(file_type=="image/jpeg"){
+        final file_path="$app_document_path/new_$file_name";
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>ImageService(file_path: file_path)));
+      }
+      else{
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Unable to open this file in this app select external application to continue")));
+        Timer(Duration(seconds: 2),()async {
+          await OpenFile.open(downloaded_file.path);
+          print("FIle downloaded at ${downloaded_file.path}");
+        });
+      }
 
     }
     catch(e){
