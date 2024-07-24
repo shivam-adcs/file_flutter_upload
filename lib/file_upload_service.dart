@@ -13,9 +13,12 @@ import 'package:mime/mime.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
 
 class FileUploadService{ 
-  static Future<dynamic> file_upload(File file)async{
+  static Future<dynamic> file_upload(File file,BuildContext context)async{
     try{
-      final fileupload= await FirebaseStorage.instance.ref().child(basename(file.path)).putFile(file);
+
+      final Reference storageReference=FirebaseStorage.instance.ref().child(basename(file.path));
+      return storageReference;
+      
       return true;
     }
     catch(e){
@@ -34,19 +37,21 @@ class FileUploadService{
       downloaded_file.create();
       final file_type=lookupMimeType(file_name);
       print(file_type);
+
       if(file_type=="application/pdf"){
         final file_path="$app_document_path/new_$file_name";
-        print("$file_path+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>PdfviewService(file_path: file_path)));
+        final is_completed=await Navigator.push(context, MaterialPageRoute(builder: (context)=>PdfviewService(file_path: file_path)));
+        // Navigator.pop(context);
       }
       else if(file_type=="video/mp4"){
         final file_path="$app_document_path/new_$file_name";
-        print("$file_path+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>VideoPlayService(file_path: file_path)));
+        final is_completed=await Navigator.push(context, MaterialPageRoute(builder: (context)=>VideoPlayService(file_path: file_path)));
+        // Navigator.pop(context);
       }
-      else if(file_type=="image/jpeg"){
+      else if(file_type!.contains("image")){
         final file_path="$app_document_path/new_$file_name";
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>ImageService(file_path: file_path)));
+        final is_completed=await Navigator.push(context, MaterialPageRoute(builder: (context)=>ImageService(file_path: file_path)));
+        // Navigator.pop(context);
       }
       else{
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Unable to open this file in this app select external application to continue")));
@@ -55,6 +60,7 @@ class FileUploadService{
           print("FIle downloaded at ${downloaded_file.path}");
         });
       }
+      return true;
 
     }
     catch(e){

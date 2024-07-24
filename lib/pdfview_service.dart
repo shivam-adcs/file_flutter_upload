@@ -21,46 +21,37 @@ late PDFViewController _pdfViewController;
     super.initState();
     print("${widget.file_path}+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   int current_page=0;
   int total_page=0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(basename(widget.file_path)),),
-      body: SafeArea(child: PDFView(
-        filePath: widget.file_path,
-        autoSpacing: true,
-        swipeHorizontal: false,
-        enableSwipe: true,
-        pageSnap: true,
-        onError: (error){print(error.toString());},
-        onPageError: (page,error){print(error.toString());},
-        onViewCreated: (PDFViewController vc){
-          _pdfViewController=vc;
-        },
-        onPageChanged: (int? page, int? total){
-          setState(() {
-            current_page=page!;
-            total_page=total!;
-          });
-          print("Page changed");
-        },
-      ),),
+          appBar: AppBar(title: Text(basename(widget.file_path)),),
+          body: SafeArea(child: PDFView(
+            filePath: widget.file_path,
+            autoSpacing: true,
+            swipeHorizontal: false,
+            enableSwipe: true,
+            pageSnap: true,
+            onError: (error){print(error.toString());},
+            onPageError: (page,error){print(error.toString());},
+            onViewCreated: (PDFViewController vc){
+              _pdfViewController=vc;
+            },
+            onPageChanged: (int? page, int? total){
+              setState(() {
+                current_page=page!;
+                total_page=total!;
+              });
+              print("Page changed");
+            },
+          ),),
     );
-    
-  }
-}
-
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
-
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

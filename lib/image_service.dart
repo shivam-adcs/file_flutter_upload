@@ -26,43 +26,6 @@ class _ImageService extends State<ImageService>{
     return Scaffold(
       appBar: AppBar(title: Text(basename(widget.file_path)),),
       body:Container(child: PhotoView(imageProvider: FileImage(file!)),)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-      
-
     );
   }
 }
